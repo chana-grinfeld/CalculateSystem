@@ -1,12 +1,11 @@
 ﻿using DAL.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace EventsSystem.Controllers
+namespace EmployeeServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -20,13 +19,10 @@ namespace EventsSystem.Controllers
             _configuration = configuration;
         }
 
-        [Route("Login")]
         [HttpPost]
-        public IActionResult Login([FromBody] LoginModel request)
+        public IActionResult Login([FromBody] LoginModel loginModel)
         {
-            string userName = request.UserName;
-            string password = request.Password;
-            if (userName == "Admin" && password == "123456")
+            if (loginModel.UserName == "Admin" && loginModel.Password == "123456")
             {
                 var claims = new List<Claim>()
             {
@@ -34,11 +30,11 @@ namespace EventsSystem.Controllers
                 new Claim(ClaimTypes.Role, "teacher")
             };
 
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("123456"));
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("123456")));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                 var tokeOptions = new JwtSecurityToken(
-                    issuer: _configuration.GetValue<string>("Admin"),
-                    audience: _configuration.GetValue<string>("Admin"),
+                    issuer: _configuration.GetValue<string>("JWT:Issuer"),
+                    audience: _configuration.GetValue<string>("JWT:Audience"),
                     claims: claims,
                     expires: DateTime.Now.AddHours(6),
                     signingCredentials: signinCredentials
@@ -48,5 +44,7 @@ namespace EventsSystem.Controllers
             }
             return Unauthorized();
         }
+
     }
+
 }

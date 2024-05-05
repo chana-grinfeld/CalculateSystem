@@ -17,12 +17,13 @@ namespace CalculatorTests
             int result = CalculatorBL.Add(num1, num2);
 
             // Assert
-            if(result == 8) {
-                return true;    
+            if (result == 8)
+            {
+                return true;
             }
-            return false;   
+            return false;
         }
-       
+
         [Fact]
         public bool TestSubtract()
         {
